@@ -238,7 +238,7 @@ function(wdk_add_driver _target)
         elseif(HOST_ARCH_ARM64)
           set(SIGNTOOL_PATH "${WDK_ROOT}/bin/${WDK_VERSION}/arm64/signtool.exe")
         endif()
-        set(SIGNTOOL_ARGS "sign /f \"${PROJECT_PFX_PATH}\" /p ${WDK_PFX_PASSWORD}")
+        set(SIGNTOOL_ARGS "sign /fd SHA256 /f \"${PROJECT_PFX_PATH}\" /p ${WDK_PFX_PASSWORD}")
 
         add_custom_command(
           COMMENT "Signing driver binary file"
