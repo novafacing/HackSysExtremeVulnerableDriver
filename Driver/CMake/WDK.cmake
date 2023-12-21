@@ -214,6 +214,14 @@ function(wdk_add_driver _target)
     )
 
     add_custom_command(
+      COMMENT "Copying sys to build directory"
+      TARGET ${_target}
+      POST_BUILD
+      COMMAND ${CMAKE_COMMAND} -E copy_if_different "${CMAKE_CURRENT_BINARY_DIR}\\Release\\${CMAKE_PROJECT_NAME}.sys" ${CMAKE_CURRENT_BINARY_DIR}
+      VERBATIM
+    )
+
+    add_custom_command(
       COMMENT "Stamping driver inf file"
       TARGET ${_target}
       POST_BUILD
@@ -223,7 +231,13 @@ function(wdk_add_driver _target)
     # sign the files if certificate is available
     if(EXISTS ${PROJECT_PFX_PATH})
         # signtool.exe Configuration
-        set(SIGNTOOL_PATH "${WDK_ROOT}/bin/${WDK_VERSION}/x86/signtool.exe")
+        if (HOST_ARCH_X86)
+          set(SIGNTOOL_PATH "${WDK_ROOT}/bin/${WDK_VERSION}/x86/signtool.exe")
+        elseif(HOST_ARCH_X64)
+          set(SIGNTOOL_PATH "${WDK_ROOT}/bin/${WDK_VERSION}/x64/signtool.exe")
+        elseif(HOST_ARCH_ARM64)
+          set(SIGNTOOL_PATH "${WDK_ROOT}/bin/${WDK_VERSION}/arm64/signtool.exe")
+        endif()
         set(SIGNTOOL_ARGS "sign /f \"${PROJECT_PFX_PATH}\" /p ${WDK_PFX_PASSWORD}")
 
         add_custom_command(
